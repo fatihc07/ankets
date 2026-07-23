@@ -151,10 +151,9 @@ export async function POST(request) {
       });
     }
 
-    // Begin transaction
-    await db.run('BEGIN TRANSACTION');
-
     try {
+      try { await db.run('BEGIN TRANSACTION'); } catch (e) {}
+
       // Format current timestamp in Turkey Local Time (Europe/Istanbul GMT+3)
       const turkeyCreatedAt = new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
@@ -186,7 +185,7 @@ export async function POST(request) {
         );
       }
 
-      await db.run('COMMIT');
+      try { await db.run('COMMIT'); } catch (e) {}
 
       return new Response(JSON.stringify({ success: true, message: 'Anketiniz başarıyla kaydedildi. Teşekkür ederiz!' }), {
         status: 201,
@@ -196,7 +195,7 @@ export async function POST(request) {
         }
       });
     } catch (txError) {
-      await db.run('ROLLBACK');
+      try { await db.run('ROLLBACK'); } catch (e) {}
       throw txError;
     }
   } catch (error) {
