@@ -61,7 +61,9 @@ export async function GET(request) {
     let formattedTime = latest.submission_time;
     if (latest.submission_time) {
       try {
-        const d = new Date(latest.submission_time);
+        const rawStr = String(latest.submission_time);
+        const isoParseable = (rawStr.includes('T') || rawStr.includes('Z')) ? rawStr : rawStr.replace(' ', 'T');
+        const d = new Date(isoParseable);
         if (!isNaN(d.getTime())) {
           formattedTime = d.toLocaleString('tr-TR', {
             timeZone: 'Europe/Istanbul',

@@ -154,8 +154,8 @@ export async function POST(request) {
     try {
       try { await db.run('BEGIN TRANSACTION'); } catch (e) {}
 
-      // Format current timestamp in Turkey Local Time (Europe/Istanbul GMT+3)
-      const turkeyCreatedAt = new Date().toLocaleString('tr-TR', {
+      // Format current timestamp in SQL-compliant format for PostgreSQL/SQLite TIMESTAMP column (YYYY-MM-DD HH:mm:ss in Europe/Istanbul GMT+3)
+      const nowTurkeySql = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Europe/Istanbul',
         year: 'numeric',
         month: '2-digit',
@@ -164,12 +164,12 @@ export async function POST(request) {
         minute: '2-digit',
         second: '2-digit',
         hour12: false
-      });
+      }).format(new Date()).replace(', ', ' ');
 
-      // Insert submission with session_date and Turkey local timestamp
+      // Insert submission with session_date and SQL-compliant Turkey local timestamp
       const subResult = await db.run(
         'INSERT INTO submissions (survey_id, session_date, open_ended_text, created_at) VALUES (?, ?, ?, ?)',
-        [surveyId, survey.active_date, openEndedText || null, turkeyCreatedAt]
+        [surveyId, survey.active_date, openEndedText || null, nowTurkeySql]
       );
       
       const submissionId = subResult.lastID;
