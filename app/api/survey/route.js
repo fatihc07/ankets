@@ -155,10 +155,22 @@ export async function POST(request) {
     await db.run('BEGIN TRANSACTION');
 
     try {
-      // Insert submission with session_date
+      // Format current timestamp in Turkey Local Time (Europe/Istanbul GMT+3)
+      const turkeyCreatedAt = new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
+      // Insert submission with session_date and Turkey local timestamp
       const subResult = await db.run(
-        'INSERT INTO submissions (survey_id, session_date, open_ended_text) VALUES (?, ?, ?)',
-        [surveyId, survey.active_date, openEndedText || null]
+        'INSERT INTO submissions (survey_id, session_date, open_ended_text, created_at) VALUES (?, ?, ?, ?)',
+        [surveyId, survey.active_date, openEndedText || null, turkeyCreatedAt]
       );
       
       const submissionId = subResult.lastID;

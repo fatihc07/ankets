@@ -57,10 +57,31 @@ export async function GET(request) {
       ORDER BY cq.id ASC
     `, [latest.submission_id]);
 
+    // Format timestamp in Turkey Local Time (Europe/Istanbul GMT+3)
+    let formattedTime = latest.submission_time;
+    if (latest.submission_time) {
+      try {
+        const d = new Date(latest.submission_time);
+        if (!isNaN(d.getTime())) {
+          formattedTime = d.toLocaleString('tr-TR', {
+            timeZone: 'Europe/Istanbul',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          });
+        }
+      } catch (e) {}
+    }
+
     return new Response(JSON.stringify({
       success: true,
       latestSubmission: {
         ...latest,
+        submission_time: formattedTime,
         answers: answers || []
       }
     }), {
