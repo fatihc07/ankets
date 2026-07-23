@@ -478,6 +478,9 @@ export default function DashboardPage() {
       }
       return `${cleanDomain}${basePath}/survey/${surveyId}`;
     }
+    if (typeof window !== 'undefined' && window.location.origin && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+      return `${window.location.origin}${basePath}/survey/${surveyId}`;
+    }
     return `http://${localIp}:${port}${basePath}/survey/${surveyId}`;
   };
 
@@ -489,6 +492,9 @@ export default function DashboardPage() {
         cleanDomain = `https://${cleanDomain}`;
       }
       return `${cleanDomain}${basePath}/survey/course/${courseId}`;
+    }
+    if (typeof window !== 'undefined' && window.location.origin && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+      return `${window.location.origin}${basePath}/survey/course/${courseId}`;
     }
     return `http://${localIp}:${port}${basePath}/survey/course/${courseId}`;
   };

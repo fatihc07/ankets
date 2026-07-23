@@ -4,19 +4,28 @@ import os from 'os';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-export async function GET() {
+export async function GET(request) {
   try {
     let publicUrl = null;
     
+    // Automatically detect cloud environment domain (Render / Vercel / Custom domain)
+    const host = request?.headers?.get('x-forwarded-host') || request?.headers?.get('host');
+    const proto = request?.headers?.get('x-forwarded-proto') || 'https';
+    if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+      publicUrl = `${proto}://${host}`;
+    }
+
     // Check if public_url.txt was created by start script
-    try {
-      const publicUrlPath = path.join(process.cwd(), 'public_url.txt');
-      const data = await fs.readFile(publicUrlPath, 'utf8');
-      if (data && data.trim()) {
-        publicUrl = data.trim();
+    if (!publicUrl) {
+      try {
+        const publicUrlPath = path.join(process.cwd(), 'public_url.txt');
+        const data = await fs.readFile(publicUrlPath, 'utf8');
+        if (data && data.trim()) {
+          publicUrl = data.trim();
+        }
+      } catch (e) {
+        // File doesn't exist, ignore
       }
-    } catch (e) {
-      // File doesn't exist, ignore
     }
 
     const interfaces = os.networkInterfaces();
