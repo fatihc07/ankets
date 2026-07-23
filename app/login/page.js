@@ -184,14 +184,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Help Card */}
-          {isLogin && (
-            <div className="mt-6 pt-6 border-t border-soft-stone text-[11px] text-ashen space-y-1.5 bg-soft-stone/30 -mx-8 -mb-8 p-6 uppercase tracking-wider">
-              <span className="font-bold text-carbon-ink">Ön Tanımlı Hoca Hesapları:</span>
-              <p className="text-ashen">Kullanıcı adları: <code className="text-carbon-ink font-mono bg-paper-white px-1.5 py-0.5 rounded border border-mist font-bold">fc07</code>, <code className="text-carbon-ink font-mono bg-paper-white px-1.5 py-0.5 rounded border border-mist font-bold">ahmet</code> veya <code className="text-carbon-ink font-mono bg-paper-white px-1.5 py-0.5 rounded border border-mist font-bold">mehmet</code></p>
-              <p className="text-ashen">Şifre: <code className="text-carbon-ink font-mono bg-paper-white px-1.5 py-0.5 rounded border border-mist font-bold">123</code></p>
-            </div>
-          )}
+
         </div>
       </div>
     </div>
