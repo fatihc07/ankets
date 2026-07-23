@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getDb, hashPassword } from '@/lib/db';
 import { encryptSession } from '@/lib/session';
 

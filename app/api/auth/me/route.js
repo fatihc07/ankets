@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getSessionFromCookie } from '@/lib/session';
 
 export async function GET(request) {

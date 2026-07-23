@@ -45,4 +45,6 @@ charts.db
 deploy.zip
 *.log
 .DS_Store
+skills/
+
 

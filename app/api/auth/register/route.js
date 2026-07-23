@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getDb, hashPassword } from '@/lib/db';
 
 export async function POST(request) {
