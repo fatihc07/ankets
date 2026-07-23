@@ -518,6 +518,8 @@ export default function DashboardPage() {
   };
 
   // Live polling for real-time incoming student submissions (1.5s interval)
+  const lastSeenRef = useRef(null);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -526,31 +528,34 @@ export default function DashboardPage() {
         const res = await fetch('/api/submissions/latest');
         if (!res.ok) return;
         const data = await res.json();
-        if (data.success && data.latestSubmission) {
+        if (data.success && data.latestSubmission && isMounted) {
           const sub = data.latestSubmission;
-          if (!isMounted) return;
 
-          setLastSeenSubmissionId(prevId => {
-            if (prevId === null) {
-              return sub.submission_id;
-            }
-            if (sub.submission_id > prevId) {
-              playNotificationChime();
-              setLiveSubmissionModal(sub);
-              setLiveToast(sub);
+          if (lastSeenRef.current === null) {
+            lastSeenRef.current = sub.submission_id;
+            setLastSeenSubmissionId(sub.submission_id);
+          } else if (sub.submission_id > lastSeenRef.current) {
+            lastSeenRef.current = sub.submission_id;
+            setLastSeenSubmissionId(sub.submission_id);
 
-              // Auto-refresh surveys/courses in background
-              fetch('/api/courses')
-                .then(r => r.json())
-                .then(cData => {
-                  if (cData.surveys) setSurveys(cData.surveys);
-                })
-                .catch(() => {});
+            // 1. Play audio chime alert
+            playNotificationChime();
 
-              return sub.submission_id;
-            }
-            return prevId;
-          });
+            // 2. AUTOMATICALLY POP UP THE SUBMISSION MODAL
+            setLiveSubmissionModal(sub);
+
+            // 3. Show live Toast notification
+            setLiveToast(sub);
+
+            // 4. Auto-refresh surveys in background
+            try {
+              const coursesRes = await fetch('/api/courses');
+              if (coursesRes.ok) {
+                const cData = await coursesRes.json();
+                if (cData.surveys) setSurveys(cData.surveys);
+              }
+            } catch (e) {}
+          }
         }
       } catch (err) {
         console.error('Polling latest submission error:', err);
